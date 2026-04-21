@@ -103,13 +103,14 @@ int main(int argc, char *argv[])
 
 	if (argc > 2) {
 		if (strcmp("-o", argv[argc - 2]) == 0) {
-			strcpy(mbr_name, argv[argc - 1]);
+			snprintf(mbr_name, sizeof(mbr_name), "%s",
+				 argv[argc - 1]);
 			argc -= 2;
 		}else {
-			strcpy(mbr_name, "mbr.bin");
+			snprintf(mbr_name, sizeof(mbr_name), "%s", "mbr.bin");
 		}
 	}else {
-		strcpy(mbr_name, "mbr.bin");
+		snprintf(mbr_name, sizeof(mbr_name), "%s", "mbr.bin");
 	}
 
 	printf("argc = %d\n", argc);

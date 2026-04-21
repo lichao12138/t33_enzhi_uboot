@@ -138,6 +138,7 @@ static int read_symbol(struct bitstream *stream, struct huffman_set *set)
 {
 	int bits = 0;
 	int code = 0;
+	int index;
 	while (!(set->count[bits] && code < set->first[bits] +
 					     set->count[bits])) {
 		code = (code << 1) + pull_bit(stream);
@@ -147,7 +148,12 @@ static int read_symbol(struct bitstream *stream, struct huffman_set *set)
 			return -1;
 		}
 	}
-	return set->symbols[set->pos[bits] + code - set->first[bits]];
+	index = set->pos[bits] + code - set->first[bits];
+	if (index < 0 || index >= set->num_symbols) {
+		stream->error = CODE_NOT_FOUND;
+		return -1;
+	}
+	return set->symbols[index];
 }
 
 /* decompress a stream of data encoded with the passed length and distance

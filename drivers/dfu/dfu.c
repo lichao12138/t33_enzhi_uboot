@@ -314,7 +314,7 @@ static int dfu_fill_entity(struct dfu_entity *dfu, char *s, int alt,
 
 	debug("%s: %s interface: %s num: %d\n", __func__, s, interface, num);
 	st = strsep(&s, " ");
-	strcpy(dfu->name, st);
+	snprintf(dfu->name, sizeof(dfu->name), "%s", st);
 
 	dfu->dev_num = num;
 	dfu->alt = alt;

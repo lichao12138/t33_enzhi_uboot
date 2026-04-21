@@ -437,6 +437,9 @@ u64 parse_size(char *sz)
 {
 	u64 n;
 
+	if (!sz || !*sz)
+		return 0;
+
 	int l = strlen(sz);
 
 #ifdef _WIN32
@@ -445,8 +448,8 @@ u64 parse_size(char *sz)
 	n = strtoull(sz, 0, 10);
 #endif
 
-	if (l) {
-		switch(sz[l-1]){
+	if (l > 0) {
+		switch (sz[l - 1]) {
 		case 'k':
 		case 'K':
 			n *= 1024;

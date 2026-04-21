@@ -15,7 +15,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 
 #define BUF_SIZE (200 * 1024 * sizeof(char))
 #define BLOCK_SIZE 64
@@ -38,12 +37,28 @@ int main(int argc, char *argv[])
     }
     int clen = 0;
     char *spl_path = argv[1];
+    FILE *fp;
 
     char *spl_buf = (char *)malloc(BUF_SIZE);
+    if (!spl_buf) {
+        printf("malloc failed\n");
+        return -1;
+    }
     memset(spl_buf, 0xff, BUF_SIZE);
 
-    FILE *fp = fopen(spl_path, "r+");
-    assert(fp != NULL);
+    if (strstr(spl_path, "../") || strstr(spl_path, "/..") ||
+        strcmp(spl_path, "..") == 0) {
+        printf("unsafe path: %s\n", spl_path);
+        free(spl_buf);
+        return -1;
+    }
+
+    fp = fopen(spl_path, "r+");
+    if (!fp) {
+        printf("can not open %s\n", spl_path);
+        free(spl_buf);
+        return -1;
+    }
 
     int len = fread(spl_buf, sizeof(char), BUF_SIZE, fp);
     if(len <= 0) {
@@ -60,6 +75,7 @@ int main(int argc, char *argv[])
     return 0;
 
 err:
+    free(spl_buf);
     fclose(fp);
     return -1;
 }

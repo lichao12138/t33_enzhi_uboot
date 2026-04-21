@@ -64,8 +64,8 @@
 		$preoffset=max(0,$offset-$limit);
 		$postoffset=$offset+$limit;
 		echo "<table width=\"100%\">\n<tr align=center>\n";
-		printf("<td><%sa href=\"%s?submit=Log&serno=$serno&offset=%d\"><img border=0 alt=\"&lt;\" src=\"/icons/left.gif\"></a></td>\n", $offset>0?"":"no", $PHP_SELF, $preoffset);
-		printf("<td><%sa href=\"%s?submit=Log&serno=$serno&offset=%d\"><img border=0 alt=\"&gt;\" src=\"/icons/right.gif\"></a></td>\n", $postoffset<$lrow['n']?"":"no", $PHP_SELF, $postoffset);
+		printf("<td><%sa href=\"%s?submit=Log&serno=$serno&offset=%d\"><img border=0 alt=\"&lt;\" src=\"/icons/left.gif\"></a></td>\n", $offset>0?"":"no", bddb_self(), $preoffset);
+		printf("<td><%sa href=\"%s?submit=Log&serno=$serno&offset=%d\"><img border=0 alt=\"&gt;\" src=\"/icons/right.gif\"></a></td>\n", $postoffset<$lrow['n']?"":"no", bddb_self(), $postoffset);
 		echo "</tr>\n</table>\n";
 	}
 	mysql_free_result($lr);
@@ -85,7 +85,7 @@
 		print_cell("<a href=\"edlog.php?serno=$row[serno]&logno=$row[logno]\">$row[logno]</a>");
 		print_cell($row['date']);
 		print_cell($row['who']);
-		print_cell("<pre>" . urldecode($row['details']) . "</pre>");
+		print_cell("<pre>" . bddb_html(urldecode($row['details'])) . "</pre>");
 		echo "</tr>\n";
 	}
 
