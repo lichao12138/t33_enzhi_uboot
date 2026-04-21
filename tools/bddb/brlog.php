@@ -56,8 +56,8 @@
 <hr></hr>
 <p></p>
 <?php
-	$limit=abs(isset($_REQUEST['limit'])?$_REQUEST['limit']:20);
-	$offset=abs(isset($_REQUEST['offset'])?$_REQUEST['offset']:0);
+	$limit=abs(intval(isset($_REQUEST['limit']) ? $_REQUEST['limit'] : 20));
+	$offset=abs(intval(isset($_REQUEST['offset']) ? $_REQUEST['offset'] : 0));
 	$lr=mysql_query("select count(*) as n from log where serno=$serno");
 	$lrow=mysql_fetch_array($lr);
 	if($lrow['n']>$limit){
@@ -78,7 +78,8 @@
 <th width="70%">details</th>
 </tr>
 <?php
-	$r=mysql_query("select * from log where serno=$serno order by logno limit $offset,$limit");
+	$r=mysql_query(sprintf("select * from log where serno=%d order by logno limit %d,%d",
+		$serno, $offset, $limit));
 
 	while($row=mysql_fetch_array($r)){
 		echo "<tr>\n";

@@ -289,6 +289,10 @@ static void decompress_dynamic(struct bitstream *stream, unsigned char *dest)
 						last_code;
 					lengths->count[last_code]++;
 				} else { /* wrap to the distance table */
+					if (curr_code - hlit >= hdist) {
+						stream->error = CODE_NOT_FOUND;
+						return;
+					}
 					distance->lengths[curr_code - hlit] =
 						last_code;
 					distance->count[last_code]++;
@@ -299,6 +303,10 @@ static void decompress_dynamic(struct bitstream *stream, unsigned char *dest)
 		} else { /* same, but more times */
 			curr_code += 11 + pull_bits(stream, 7);
 			last_code = 0;
+		}
+		if (curr_code > hlit + hdist) {
+			stream->error = CODE_NOT_FOUND;
+			return;
 		}
 	}
 	fill_code_tables(lengths);
@@ -318,6 +326,10 @@ static void decompress_dynamic(struct bitstream *stream, unsigned char *dest)
 		} else if (symbol == 16) {
 			length = 3 + pull_bits(stream, 2);
 			for (;length; length--, curr_code++) {
+				if (curr_code >= hdist) {
+					stream->error = CODE_NOT_FOUND;
+					return;
+				}
 				distance->lengths[curr_code] =
 					last_code;
 				distance->count[last_code]++;
@@ -328,6 +340,10 @@ static void decompress_dynamic(struct bitstream *stream, unsigned char *dest)
 		} else {
 			curr_code += 11 + pull_bits(stream, 7);
 			last_code = 0;
+		}
+		if (curr_code > hdist) {
+			stream->error = CODE_NOT_FOUND;
+			return;
 		}
 	}
 	fill_code_tables(distance);

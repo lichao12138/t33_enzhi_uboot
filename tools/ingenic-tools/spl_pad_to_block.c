@@ -15,9 +15,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 #define BUF_SIZE (200 * 1024 * sizeof(char))
 #define BLOCK_SIZE 64
+
+static int resolve_input_path(const char *path, char *resolved)
+{
+    if (!path || !*path)
+        return -1;
+    if (strstr(path, "../") || strstr(path, "/..") || strcmp(path, "..") == 0)
+        return -1;
+    if (!realpath(path, resolved))
+        return -1;
+
+    return 0;
+}
 
 /* 当spl len不够一个block时候，补齐0，使足够block整除 */
 static int change_spl_len(int len)
@@ -36,7 +49,8 @@ int main(int argc, char *argv[])
         return -1;
     }
     int clen = 0;
-    char *spl_path = argv[1];
+    char resolved_path[PATH_MAX];
+    char *spl_path = resolved_path;
     FILE *fp;
 
     char *spl_buf = (char *)malloc(BUF_SIZE);
@@ -46,9 +60,8 @@ int main(int argc, char *argv[])
     }
     memset(spl_buf, 0xff, BUF_SIZE);
 
-    if (strstr(spl_path, "../") || strstr(spl_path, "/..") ||
-        strcmp(spl_path, "..") == 0) {
-        printf("unsafe path: %s\n", spl_path);
+    if (resolve_input_path(argv[1], resolved_path)) {
+        printf("unsafe path: %s\n", argv[1]);
         free(spl_buf);
         return -1;
     }
