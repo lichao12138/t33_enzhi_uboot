@@ -68,7 +68,15 @@ void mkimage_register (struct image_type_params *tparams)
 			fprintf (stderr, "%s: %s already registered\n",
 				params.cmdname, tparams->name);
 			return;
+		}
 	}
+
+	/* add input struct entry at the end of link list */
+	*tp = tparams;
+	/* mark input entry as last entry in the link list */
+	tparams->next = NULL;
+
+	debug ("Registered %s\n", tparams->name);
 }
 
 static off_t get_file_size(const char *file)
@@ -88,14 +96,6 @@ static off_t get_file_size(const char *file)
 	close(fd);
 
 	return size;
-}
-
-	/* add input struct entry at the end of link list */
-	*tp = tparams;
-	/* mark input entry as last entry in the link list */
-	tparams->next = NULL;
-
-	debug ("Registered %s\n", tparams->name);
 }
 
 /*
